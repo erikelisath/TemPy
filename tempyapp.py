@@ -15,4 +15,5 @@ api.add_resource(tempyrest.TemPyRest, '/<string:id>')
 
 if __name__ == '__main__':
     database.init()
+    database.testdata()
     app.run(debug=True)

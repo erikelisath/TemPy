@@ -10,7 +10,7 @@ class User(BaseModel):
     name = pwe.CharField()
     key = pwe.CharField(unique=True)
 
-class SenorData(BaseModel):
+class SensorData(BaseModel):
     date = pwe.DateTimeField()
     temp = pwe.FloatField()
     humi = pwe.FloatField()
@@ -18,5 +18,16 @@ class SenorData(BaseModel):
 
 def init():
     if db.connect():
-        db.create_tables([User, SenorData])
+        db.create_tables([User, SensorData])
+        db.close()
+    else:
+        print('Cannot connect to database!')
+
+def testdata():
+    if db.connect():
+        try:
+            user = User(name='erik', key='erik')
+            user.save()
+        except:
+            print('Test User Exists')
         db.close()
