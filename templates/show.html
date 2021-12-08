@@ -1,0 +1,26 @@
+<!doctype html>
+{% if key %}
+  <title>Sensor Data for {{ key }}</title>
+  <h1>Sensor Data for {{ key }}</h1>
+{% else %}
+  <title>Sensor Data</title>
+  <h1>Sensor Data</h1>
+{% endif %}
+<table border="1px">
+{% for data in sensor_data %}
+  <tr>
+    <td>
+      {{ data.id }}
+    </td>
+    <td>
+      {{ data.date }}
+    </td>
+    <td>
+      {{ data.temp }}
+    </td>
+    <td>
+      {{ data.humi }}
+    </td>
+  </tr>
+{% endfor %}
+</table>

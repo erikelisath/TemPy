@@ -1,0 +1,9 @@
+<!doctype html>
+<title>TemPyDash</title>
+<h1>Welcome to TemPyDash!</h1>
+<p>
+  Aviables Sensor Datas:
+</p>
+{% for key in keys %}
+<a href='show/{{ key.key }}'>{{ key.name }}</a>
+{% endfor %}
