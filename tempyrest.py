@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, current_app
 from flask_restful import Resource
 from marshmallow import Schema, fields, ValidationError, pprint
 import datetime as dt
@@ -33,7 +33,8 @@ class TemPyRest(Resource):
 
     # PUT
     def put(self, id):
-        print(f'PUT - for ID: {id}')
+        current_app.logger.debug(f'PUT REQUEST for key: {id}')
+
         req_data = None
         temp_schema = TempSchema()
         user = User.select().where(User.key == id)
@@ -46,7 +47,8 @@ class TemPyRest(Resource):
                 pprint(err)
                 return {'error': err.messages}, 422
 
-            print('REQUEST DATA:', req_data)
+            current_app.logger.debug(f'REQUEST Data: {req_data}')
+
             if 'date' not in req_data:
                 req_data['date'] = dt.datetime.now()
 
@@ -55,10 +57,13 @@ class TemPyRest(Resource):
                             humi=req_data['humi'],
                             date=req_data['date'],
                             fkey = id)
+
             if sensor_data.save():
                 return {'success': 'Data saved.'}
             else:
+                current_app.logger.error('Some data can not saved')
                 return {'failed': 'Data was not saved.'}
 
         else:
-            return {'error': 'User not exists.'}
+            current_app.logger.warning(f'BAD REQUEST for key {id}')
+            return {'error': 'User not exists.'}, 403
