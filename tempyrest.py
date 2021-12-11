@@ -3,7 +3,7 @@ from flask_restful import Resource
 from marshmallow import Schema, fields, ValidationError, pprint
 import datetime as dt
 
-from database import User, SensorData
+from database import Device, SensorData
 
 # Schema for correct data pushing
 class TempSchema(Schema):
@@ -23,28 +23,29 @@ class TempSchema(Schema):
 # TemPy Rest Api
 class TemPyRest(Resource):
     # GET
-    def get(self, id):
-        user = User.select().where(User.key == id)
+    def get(self, key):
+        device = Device.select().where(Device.key == key)
 
-        if user.exists():
-            return {'request': f'Hello {user.get().name}'}
+        if device.exists():
+            return {'request': f'Hello {device.get().info}!'}
         else:
-            return {'request': 'No User with this key aviable.'}
+            return {'request': 'No device is available with this key.'}
 
     # PUT
-    def put(self, id):
-        current_app.logger.debug(f'PUT REQUEST for key: {id}')
+    def put(self, key):
+        current_app.logger.debug(f'PUT REQUEST for key: {key}')
 
         req_data = None
         temp_schema = TempSchema()
-        user = User.select().where(User.key == id)
+        device = Device.select().where(Device.key == key)
 
-        if user.exists():
+        if device.exists():
             try:
                 reqjson = request.get_json(force = True)
                 req_data = temp_schema.load(reqjson)
             except ValidationError as err:
                 pprint(err)
+                current_app.logger.error(err)
                 return {'error': err.messages}, 422
 
             current_app.logger.debug(f'REQUEST Data: {req_data}')
@@ -56,7 +57,7 @@ class TemPyRest(Resource):
                             temp=req_data['temp'],
                             humi=req_data['humi'],
                             date=req_data['date'],
-                            fkey = id)
+                            fdevice = device)
 
             if sensor_data.save():
                 return {'success': 'Data saved.'}
@@ -65,5 +66,5 @@ class TemPyRest(Resource):
                 return {'failed': 'Data was not saved.'}
 
         else:
-            current_app.logger.warning(f'BAD REQUEST for key {id}')
-            return {'error': 'User not exists.'}, 403
+            current_app.logger.warning(f'BAD REQUEST for key {key}')
+            return {'error': 'Key does not exists.'}, 403

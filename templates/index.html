@@ -4,6 +4,6 @@
 <p>
   Aviables Sensor Datas:
 </p>
-{% for key in keys %}
-<a href='show/{{ key.key }}'>{{ key.name }}</a>
+{% for device in devices %}
+<a href='show/{{ device.key }}'>{{ device.info }} ({{ device.key }})</a>
 {% endfor %}
