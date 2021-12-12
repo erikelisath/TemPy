@@ -1,5 +1,5 @@
 from flask import render_template
-from database import User, Device, SensorData
+from tempy.db import User, Device, SensorData
 
 #@app.route('/')
 def index():

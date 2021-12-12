@@ -3,7 +3,7 @@ from flask_restful import Resource
 from marshmallow import Schema, fields, ValidationError, pprint
 import datetime as dt
 
-from database import Device, SensorData
+from tempy.db import Device, SensorData
 
 # Schema for correct data pushing
 class TempSchema(Schema):
