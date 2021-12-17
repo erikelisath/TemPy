@@ -20,7 +20,8 @@ def create_app(test_config=None):
 
     # add urls and resources
     app.add_url_rule('/', view_func=dash.index)
-    app.add_url_rule('/show/<key>', view_func=dash.show)
+    app.add_url_rule('/show/<key>', view_func=dash.show, methods=['GET', 'POST'])
+    app.add_url_rule('/raw/<key>', view_func=dash.raw)
     api.add_resource(rest.TemPyRest, '/<string:key>')
 
     # init database, add test data

@@ -1,26 +1,89 @@
-<!doctype html>
-{% if key %}
-  <title>Sensor Data for {{ key }}</title>
-  <h1>Sensor Data for {{ key }}</h1>
-{% else %}
-  <title>Sensor Data</title>
-  <h1>Sensor Data</h1>
-{% endif %}
-<table border="1px">
-{% for data in sensor_data %}
-  <tr>
-    <td>
-      {{ data.id }}
-    </td>
-    <td>
-      {{ data.date }}
-    </td>
-    <td>
-      {{ data.temp }}
-    </td>
-    <td>
-      {{ data.humi }}
-    </td>
-  </tr>
-{% endfor %}
-</table>
+{% extends "base.html" %}
+{% block title %} | {{ device.key }}{% endblock %}
+{% block head %}
+  {{ super() }}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.6.2/dist/chart.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/luxon"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon"></script>
+{% endblock %}
+{% block content %}
+  <center>
+    <h1>Sensor Data from '<i>{{ device.key }}</i>' (last 24h)</h1>
+  </center>
+  <center>
+    <canvas id="chart" width="800" height="400"></canvas>
+    <script>
+      var chartData = {
+        labels : [
+          {% for data in sensor_data %}
+           "{{ data.date }}",
+          {% endfor %}
+	       ],
+        datasets : [{
+          backgroundColor: "rgba(245, 62, 39, 0.2)",
+          borderColor: "rgba(245, 62, 39, 0.8)",
+          radius: 0,
+          fill: true,
+          label: 'Temperature',
+          data: [
+            {% for data in sensor_data %}
+               {{ data.temp }},
+            {% endfor %}
+	           ]
+          }, {
+            backgroundColor: "rgba(151,187,205,0.2)",
+            borderColor: "rgba(39, 145, 245, 0.8)",
+            radius: 0,
+            // fill: true,
+            label: 'Humidity',
+            data: [
+              {% for data in sensor_data %}
+                 {{ data.humi }},
+              {% endfor %}
+            ]
+          }
+        ]
+      };
+
+     const ctx = document.getElementById('chart').getContext('2d');
+     const myChart = new Chart(ctx, {
+          type: 'line',
+          data: chartData,
+          options: {
+            // responsive: false,
+            scales: {
+              x: {
+                type: 'time',
+                time: {
+                  // tooltipFormat: 'DD T'
+                }
+              },
+              y: {}
+            }
+          }
+      });
+    </script>
+    <p>
+      Amount of selecting data:
+    </p>
+    <form method="post" action="/show/{{ device.key }}">
+      <input type="submit" value="ALL" name="view" {% if g.view == 'ALL' %} disabled {% endif %}/>
+      <input type="submit" value="LESS" name="view" {% if g.view == 'LESS' %} disabled {% endif %}/>
+      <input type="submit" value="2h" name="time" {% if g.time == '2h' %} disabled {% endif %}/>
+    </form>
+  </center>
+  <hr />
+  <h1>Device Information</h1>
+  <li>
+    Key: <b><i>{{ device.key }}</i></b>
+  </li>
+  <li>
+    Info: {{ device.info }}
+  </li>
+  <li>
+    Enviroment: {{ device.environment }}
+  </li>
+  <li>
+    <a href="/raw/{{ device.key }}">Raw Data >> </a>
+  </li>
+{% endblock %}

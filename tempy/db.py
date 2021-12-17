@@ -7,7 +7,7 @@ class BaseModel(pwe.Model):
         database = db
 
 class User(BaseModel):
-    name = pwe.CharField()
+    name = pwe.CharField(unique=True)
 
 class Device(BaseModel):
     key = pwe.CharField(unique=True)

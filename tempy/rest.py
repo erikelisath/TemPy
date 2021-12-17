@@ -51,7 +51,7 @@ class TemPyRest(Resource):
             current_app.logger.debug(f'REQUEST Data: {req_data}')
 
             if 'date' not in req_data:
-                req_data['date'] = dt.datetime.now()
+                req_data['date'] = dt.datetime.now().isoformat()
 
             sensor_data = SensorData(
                             temp=req_data['temp'],

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %} | {{ key }}{% endblock %}
+{% block content %}
+<h1>Raw Sensor Data from '<i>{{ key }}</i>'</h1>
+<table border="1px">
+{% for data in sensor_data %}
+  <tr>
+    <td>
+      {{ data.id }}
+    </td>
+    <td>
+      {{ data.date }}
+    </td>
+    <td>
+      {{ data.temp }}
+    </td>
+    <td>
+      {{ data.humi }}
+    </td>
+  </tr>
+{% endfor %}
+</table>
+{% endblock %}

@@ -1,9 +1,12 @@
-<!doctype html>
-<title>TemPyDash</title>
+{% extends "base.html" %}
+{% block content %}
 <h1>Welcome to TemPyDash!</h1>
 <p>
-  Aviables Sensor Datas:
+  Available Sensor Datas:
 </p>
 {% for device in devices %}
-<a href='show/{{ device.key }}'>{{ device.info }} ({{ device.key }})</a>
+<li>
+  <a href='show/{{ device.key }}'>{{ device.info }} ({{ device.key }})</a>
+</li>
 {% endfor %}
+{% endblock %}
