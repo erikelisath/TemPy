@@ -1,4 +1,7 @@
 import peewee as pwe
+import os.path as op
+import datetime as dt
+from shutil import copy
 
 db = pwe.SqliteDatabase(None)
 
@@ -23,20 +26,39 @@ class SensorData(BaseModel):
 
 def init(app):
     db.init(app.config['DATABASE'])
-    if db.connect():
-        db.create_tables([User, Device, SensorData])
-        app.logger.debug(f'Create database "{app.config["DATABASE"]}" with tables')
-        db.close()
-    else:
-        app.logger.error('Can not connect to database!')
 
-def testdata():
+    if type(db) is pwe.SqliteDatabase:
+        # check if database file exists
+        if op.isfile(app.config['DATABASE']):
+            # create backup of database
+            copy(app.config['DATABASE'],
+                dt.datetime.now().strftime('%Y-%m-%dT%H-%M-%S')+'_'+app.config['DATABASE'])
+            app.logger.info('Found existing database, create backup.')
+
+        else:
+            # create database with tables
+            if db.connect():
+                db.create_tables([User, Device, SensorData]) # will  create tables with 'IF NOT EXISTS'
+                app.logger.info(f'Create database "{app.config["DATABASE"]}" with tables.')
+                db.close()
+            else:
+                app.logger.error('Can not connect to database!')
+
+        # when development modus is set create test data
+        if app.config['ENV'] == 'development':
+            testdata(app)
+
+def testdata(app):
     if db.connect():
         try:
-            test_user = User.create(name='Erik')
+            test_user = User.create(name='Tester')
             device = Device.create(key='test', info='ESP-12E', environment='Living room', fuser=test_user)
-            sensordata = SensorData.create(temp='23.0', humi='33.0', date='2021-01-01T10:10:10', fdevice=device)
+            sensordata = SensorData.insert_many([
+                {'temp':'21.0', 'humi':'33.0', 'date':'2021-01-01T10:10:10', 'fdevice':device},
+                {'temp':'22.0', 'humi':'35.0', 'date':'2021-01-01T10:11:10', 'fdevice':device},
+                {'temp':'23.0', 'humi':'37.0', 'date':'2021-01-01T10:12:10', 'fdevice':device}
+            ]).execute()
+            app.logger.debug('Create test data.')
         except:
-            print('Can not create test data')
-            #current_app.logger.debug('Test data already exists')
+            app.logger.debug('Test data already exists!')
         db.close()

@@ -24,9 +24,8 @@ def create_app(test_config=None):
     app.add_url_rule('/raw/<key>', view_func=dash.raw)
     api.add_resource(rest.TemPyRest, '/<string:key>')
 
-    # init database, add test data
+    # init database
     db.init(app)
-    db.testdata()
 
     if test_config is None:
         # load the instance config, if it exists, when not testing

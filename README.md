@@ -11,7 +11,7 @@ Small temperature display application with dashboard and REST API, implemented w
 **Run flask application**
 
 1. `export FLASK_APP=tempy` - TemPy application, for the terminal environment
-2. `export FLASK_ENV=development` - optional, running the app in development mode with debugging
+2. `export FLASK_ENV=development` - optional, running the app in development mode with debugging, Default: `production`
 3. `flask run` - run the TemPy app, optional `--host=0.0.0.0` for externally visible server (public)
 
 ## TemPyDash
@@ -61,7 +61,7 @@ Tables
 
 Work in progress!
 
-**Open to implement** 
+**Open to implement**
 
 - [ ] Data attribute: air pressure
 - [ ] better GET request
