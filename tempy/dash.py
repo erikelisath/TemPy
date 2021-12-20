@@ -14,7 +14,7 @@ def show(key=None):
         data = []
         query = SensorData.select().join(Device).where(
             Device.key == key
-            and SensorData.date >= (dt.datetime.now() - dt.timedelta(hours=24))
+            and SensorData.date >= (dt.datetime.now() - dt.timedelta(hours=24)).isoformat()
         ) # sensor data for the last 24h
         device = Device.get(Device.key == key)
 
@@ -35,7 +35,7 @@ def show(key=None):
                 g.time = '2h'
                 query = SensorData.select().join(Device).where(
                     Device.key == key
-                    and SensorData.date >= (dt.datetime.now() - dt.timedelta(hours=2))
+                    and SensorData.date >= (dt.datetime.now() - dt.timedelta(hours=2)).isoformat()
                 )
                 return render_template('show.html', device=device, sensor_data=query)
 

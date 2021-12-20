@@ -28,8 +28,8 @@ def init(app):
     db.init(app.config['DATABASE'])
 
     if type(db) is pwe.SqliteDatabase:
-        # check if database file exists
-        if op.isfile(app.config['DATABASE']):
+        # check if database file exists and ENV is not development
+        if op.isfile(app.config['DATABASE']) and (app.config['ENV'] != 'development'):
             # create backup of database
             copy(app.config['DATABASE'],
                 dt.datetime.now().strftime('%Y-%m-%dT%H-%M-%S')+'_'+app.config['DATABASE'])

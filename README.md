@@ -8,11 +8,16 @@ Small temperature display application with dashboard and REST API, implemented w
 * peewee
 * marshmallow
 
-**Run flask application**
+**Run application in development mode**
 
 1. `export FLASK_APP=tempy` - TemPy application, for the terminal environment
-2. `export FLASK_ENV=development` - optional, running the app in development mode with debugging, Default: `production`
-3. `flask run` - run the TemPy app, optional `--host=0.0.0.0` for externally visible server (public)
+2. `export FLASK_ENV=development` - optional, running the app in development mode with debugging on
+3. `flask run` - run the TemPy app, optional `--host=0.0.0.0` as externally visible server (public)
+
+**Run application in production mode**
+
+1. setup WSGI server, like *gunicorn*
+2. run as `gunicorn 'tempy:create_app()'`
 
 ## TemPyDash
 
@@ -40,12 +45,12 @@ curl 127.0.0.1:5000/kj2 -X PUT -d '{"temp": "23.3", "humi": "33"}' -H "Content-T
 
 `temp` - requested, float type, Temperature  
 `humi` - requested, float type, Humidity  
-`date` - optional, date time ISO format, Date with Time
+`date` - optional, date time ISO format, Date with Time  
 `pres` - *not realized*, Air Pressure
 
 ## Database
 
-Tables
+Tables schema:
 ```
 | user |
 | id | name |

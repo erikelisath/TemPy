@@ -9,7 +9,7 @@ def create_app(test_config=None):
     api = Api(app)
 
     app.config.from_mapping(
-        SECRET_KEY='dev',
+        SECRET_KEY='something_has_secrets_here',
         DATABASE='database.db'
     )
 
