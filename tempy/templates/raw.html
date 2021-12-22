@@ -1,10 +1,17 @@
 {% extends "base.html" %}
 {% block title %} | {{ key }}{% endblock %}
+{% block pagetitle %}Raw Sensor Data{% endblock %}
 {% block content %}
-<h1>Raw Sensor Data from '<i>{{ key }}</i>'</h1>
-<table border="1px">
+<div class="overflow-auto">
+<table class="f6 w-100 mw8 center" cellspacing="0">
+  <tr class="stripe-dark">
+    <th class="">ID</th>
+    <th class="">Date</th>
+    <th class="">Temp</th>
+    <th class="">Humi</th>
+  </tr>
 {% for data in sensor_data %}
-  <tr>
+  <tr class="stripe-dark">
     <td>
       {{ data.id }}
     </td>
@@ -20,4 +27,5 @@
   </tr>
 {% endfor %}
 </table>
+</div>
 {% endblock %}

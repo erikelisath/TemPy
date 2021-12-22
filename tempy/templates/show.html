@@ -6,12 +6,24 @@
   <script src="https://cdn.jsdelivr.net/npm/luxon"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon"></script>
 {% endblock %}
+{% block pagetitle %}Sensor Data{% endblock %}
 {% block content %}
-  <center>
-    <h1>Sensor Data from '<i>{{ device.key }}</i>' (last 24h)</h1>
-  </center>
-  <center>
-    <canvas id="chart" width="800" height="400"></canvas>
+<article class="cf pa3">
+  <div class="fl w-50 tl">
+    <dl class="db dib-l w-auto-l lh-title mr6-l">
+      <dd class="f6 fw4 ml0 gray ttu tracked">Temperature</dd>
+      <dd class="f2 f-subheadline-l fw6 ml0">{% if sensor_data %}{{ sensor_data[-1].temp }}°C{% endif %}</dd>
+    </dl>
+  </div>
+  <div class="fl w-50 tl">
+    <dl class="db dib-l w-auto-l lh-title mr6-l">
+      <dd class="f6 fw4 ml0 gray ttu tracked">Humidity</dd>
+      <dd class="f2 f-subheadline-l fw6 ml0">{% if sensor_data %}{{ sensor_data[-1].humi }}%{% endif %}</dd>
+    </dl>
+  </div>
+</article>
+  <div class="bb b--black-20 pv3">
+    <canvas id="chart" width="80vw" height="60vw"></canvas>
     <script>
       var chartData = {
         labels : [
@@ -56,6 +68,7 @@
                 type: 'time',
                 time: {
                   // tooltipFormat: 'DD T'
+                  tooltipFormat: 'DD T'
                 }
               },
               y: {}
@@ -63,27 +76,42 @@
           }
       });
     </script>
-    <p>
-      Amount of selecting data:
-    </p>
+    <h4 class="f6 fw6 ttu tracked">Amount of selected data</h4>
     <form method="post" action="/show/{{ device.key }}">
       <input type="submit" value="ALL" name="view" {% if g.view == 'ALL' %} disabled {% endif %}/>
       <input type="submit" value="LESS" name="view" {% if g.view == 'LESS' %} disabled {% endif %}/>
       <input type="submit" value="2h" name="time" {% if g.time == '2h' %} disabled {% endif %}/>
     </form>
-  </center>
-  <hr />
-  <h1>Device Information</h1>
-  <li>
-    Key: <b><i>{{ device.key }}</i></b>
-  </li>
-  <li>
-    Info: {{ device.info }}
-  </li>
-  <li>
-    Enviroment: {{ device.environment }}
-  </li>
-  <li>
-    <a href="/raw/{{ device.key }}">Raw Data >> </a>
-  </li>
+  </div>
+  <div class="pa3 pa5-ns">
+    <h4 class="f6 fw6 ttu tracked">Device Informations</h4>
+    <dl class="f6 lh-title mv2">
+      <dt class="dib b">Key:</dt>
+      <dd class="dib ml0 gray"><i>{{ device.key }}</i></dd>
+    </dl>
+    <dl class="f6 lh-title mv2">
+      <dt class="dib b">Info:</dt>
+      <dd class="dib ml0 gray">{{ device.info }}</dd>
+    </dl>
+    <dl class="f6 lh-title mv2">
+      <dt class="dib b">Enviroment:</dt>
+      <dd class="dib ml0 gray">{{ device.environment }}</dd>
+    </dl>
+    <dl class="f6 lh-title mv2">
+      <dt class="dib b">Raw Data:</dt>
+      <dd class="dib ml0"><a class="purple link dim" href="/raw/{{ device.key }}">235235</a></dd>
+    </dl>
+    <dl class="f6 lh-title mv2">
+      <dt class="dib b">Home:</dt>
+      <dd class="dib ml0 gray">Home Record</dd>
+    </dl>
+    <dl class="f6 lh-title mv2">
+      <dt class="dib b">Road:</dt>
+      <dd class="dib ml0 gray">Road Record</dd>
+    </dl>
+    <dl class="f6 lh-title mv2">
+      <dt class="dib b">Div:</dt>
+      <dd class="dib ml0 gray">Division Record</dd>
+    </dl>
+  </div>
 {% endblock %}
