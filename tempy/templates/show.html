@@ -8,110 +8,121 @@
 {% endblock %}
 {% block pagetitle %}Sensor Data{% endblock %}
 {% block content %}
-<article class="cf pa3">
+<article class="cf pa3 bb b--black-20">
   <div class="fl w-50 tl">
     <dl class="db dib-l w-auto-l lh-title mr6-l">
       <dd class="f6 fw4 ml0 gray ttu tracked">Temperature</dd>
-      <dd class="f2 f-subheadline-l fw6 ml0">{% if sensor_data %}{{ sensor_data[-1].temp }}°C{% endif %}</dd>
+      <dd class="f2 f-subheadline-l fw6 ml0">{% if temp %}{{ temp[-1] }}°C{% endif %}</dd>
     </dl>
   </div>
   <div class="fl w-50 tl">
     <dl class="db dib-l w-auto-l lh-title mr6-l">
       <dd class="f6 fw4 ml0 gray ttu tracked">Humidity</dd>
-      <dd class="f2 f-subheadline-l fw6 ml0">{% if sensor_data %}{{ sensor_data[-1].humi }}%{% endif %}</dd>
+      <dd class="f2 f-subheadline-l fw6 ml0">{% if humi %}{{ humi[-1] }}%{% endif %}</dd>
     </dl>
+  </div>
+  <div class="f7 gray">
+    {% if date %}{{ date[-1]|strdate }}{% endif %}
   </div>
 </article>
-  <div class="bb b--black-20 pv3">
-    <canvas id="chart" width="80vw" height="60vw"></canvas>
-    <script>
-      var chartData = {
-        labels : [
-          {% for data in sensor_data %}
-           "{{ data.date }}",
-          {% endfor %}
-	       ],
-        datasets : [{
-          backgroundColor: "rgba(245, 62, 39, 0.2)",
-          borderColor: "rgba(245, 62, 39, 0.8)",
+<div class="pv3">
+  <canvas id="chart" width="80vw" height="60vw"></canvas>
+  <script>
+    var chartData = {
+      labels:{{ date|safe }},
+      // labels : [
+      //   {% for data in sensor_data %}
+      //    "{{ data.date }}",
+      //   {% endfor %}
+      // ],
+      datasets : [{
+        backgroundColor: "rgba(245, 62, 39, 0.2)",
+        borderColor: "rgba(245, 62, 39, 0.8)",
+        radius: 0,
+        fill: true,
+        label: 'Temperature',
+        data:{{ temp }}
+        // data: [
+        //   {% for data in sensor_data %}
+        //      {{ data.temp }},
+        //   {% endfor %}
+        //    ]
+        }, {
+          backgroundColor: "rgba(151,187,205,0.2)",
+          borderColor: "rgba(39, 145, 245, 0.8)",
           radius: 0,
-          fill: true,
-          label: 'Temperature',
-          data: [
-            {% for data in sensor_data %}
-               {{ data.temp }},
-            {% endfor %}
-	           ]
-          }, {
-            backgroundColor: "rgba(151,187,205,0.2)",
-            borderColor: "rgba(39, 145, 245, 0.8)",
-            radius: 0,
-            // fill: true,
-            label: 'Humidity',
-            data: [
-              {% for data in sensor_data %}
-                 {{ data.humi }},
-              {% endfor %}
-            ]
-          }
-        ]
-      };
+          // fill: true,
+          label: 'Humidity',
+          data:{{ humi }}
+          // data: [
+          //   {% for data in sensor_data %}
+          //      {{ data.humi }},
+          //   {% endfor %}
+          // ]
+        }
+      ]
+    };
 
-     const ctx = document.getElementById('chart').getContext('2d');
-     const myChart = new Chart(ctx, {
-          type: 'line',
-          data: chartData,
-          options: {
-            // responsive: false,
-            scales: {
-              x: {
-                type: 'time',
-                time: {
-                  // tooltipFormat: 'DD T'
-                  tooltipFormat: 'DD T'
-                }
-              },
-              y: {}
-            }
+   const ctx = document.getElementById('chart').getContext('2d');
+   const myChart = new Chart(ctx, {
+        type: 'line',
+        data: chartData,
+        options: {
+          // responsive: false,
+          scales: {
+            x: {
+              type: 'time',
+              time: {
+                // tooltipFormat: 'DD T'
+                tooltipFormat: 'DD T'
+              }
+            },
+            y: {}
           }
-      });
-    </script>
-    <h4 class="f6 fw6 ttu tracked">Amount of selected data</h4>
-    <form method="post" action="/show/{{ device.key }}">
-      <input type="submit" value="ALL" name="view" {% if g.view == 'ALL' %} disabled {% endif %}/>
-      <input type="submit" value="LESS" name="view" {% if g.view == 'LESS' %} disabled {% endif %}/>
-      <input type="submit" value="2h" name="time" {% if g.time == '2h' %} disabled {% endif %}/>
-    </form>
-  </div>
-  <div class="pa3 pa5-ns">
-    <h4 class="f6 fw6 ttu tracked">Device Informations</h4>
+        }
+    });
+  </script>
+</div>
+<div class="pa3 pa5-ns bb b--black-20">
+  <h4 class="f6 fw6 ttu tracked">Amount of selected data</h4>
+  <form method="post" action="/show/{{ device.key }}">
+    <input type="submit" value="ALL" name="view" {% if g.view == 'ALL' %} disabled {% endif %}/>
+    <input type="submit" value="LESS" name="view" {% if g.view == 'LESS' %} disabled {% endif %}/>
+    <input type="submit" value="2h" name="time" {% if g.time == '2h' %} disabled {% endif %}/>
+  </form>
+</div>
+<div class="pa3 pa5-ns bb b--black-20">
+  <h4 class="f6 fw6 ttu tracked">Statistics</h4>
     <dl class="f6 lh-title mv2">
-      <dt class="dib b">Key:</dt>
-      <dd class="dib ml0 gray"><i>{{ device.key }}</i></dd>
+      <dt class="dib b">Avg. Temperature:</dt>
+      <dd class="dib ml0 gray">{{ stats.mean_temp }}°C</dd>
     </dl>
     <dl class="f6 lh-title mv2">
-      <dt class="dib b">Info:</dt>
-      <dd class="dib ml0 gray">{{ device.info }}</dd>
+      <dt class="dib b">Avg. Humidity:</dt>
+      <dd class="dib ml0 gray">{{ stats.mean_humi }}%</dd>
     </dl>
-    <dl class="f6 lh-title mv2">
-      <dt class="dib b">Enviroment:</dt>
-      <dd class="dib ml0 gray">{{ device.environment }}</dd>
-    </dl>
-    <dl class="f6 lh-title mv2">
-      <dt class="dib b">Raw Data:</dt>
-      <dd class="dib ml0"><a class="purple link dim" href="/raw/{{ device.key }}">235235</a></dd>
-    </dl>
-    <dl class="f6 lh-title mv2">
-      <dt class="dib b">Home:</dt>
-      <dd class="dib ml0 gray">Home Record</dd>
-    </dl>
-    <dl class="f6 lh-title mv2">
-      <dt class="dib b">Road:</dt>
-      <dd class="dib ml0 gray">Road Record</dd>
-    </dl>
-    <dl class="f6 lh-title mv2">
-      <dt class="dib b">Div:</dt>
-      <dd class="dib ml0 gray">Division Record</dd>
-    </dl>
-  </div>
+</div>
+<div class="pa3 pa5-ns">
+  <h4 class="f6 fw6 ttu tracked">Device Informations</h4>
+  <dl class="f6 lh-title mv2">
+    <dt class="dib b">Key:</dt>
+    <dd class="dib ml0 gray"><i>{{ device.key }}</i></dd>
+  </dl>
+  <dl class="f6 lh-title mv2">
+    <dt class="dib b">Info:</dt>
+    <dd class="dib ml0 gray">{{ device.info }}</dd>
+  </dl>
+  <dl class="f6 lh-title mv2">
+    <dt class="dib b">Enviroment:</dt>
+    <dd class="dib ml0 gray">{{ device.environment }}</dd>
+  </dl>
+  <dl class="f6 lh-title mv2">
+    <dt class="dib b">Records:</dt>
+    <dd class="dib ml0"><a class="purple link dim" href="/raw/{{ device.key }}">{{ stats.records }}</a></dd>
+  </dl>
+  <dl class="f6 lh-title mv2">
+    <dt class="dib b">Last Record:</dt>
+    <dd class="dib ml0 gray">{% if stats.last_recd %}{{ stats.last_recd|strdate }}{% endif %}</dd>
+  </dl>
+</div>
 {% endblock %}
