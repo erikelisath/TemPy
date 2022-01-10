@@ -2,7 +2,7 @@ from flask import render_template, request, g
 from tempy.db import User, Device, SensorData
 import datetime as dt
 import statistics
-
+from time import process_time
 
 def index():
     query = Device.select()
@@ -17,44 +17,33 @@ def show(key=None):
         temp = []
         humi = []
         device = Device.get(Device.key == key)
-        stats = {'records': len(get_sensor_data(key))}
+        stats = {'records': get_sensor_data(key).count()}
 
         # POST method
         if request.method == 'POST':
             # button ALL
             if request.form.get('view') == 'ALL':
                 g.view = 'ALL'
-                query = get_sensor_data(key, 24)
+                query = get_query(key, 24)
 
             # button LESS
             elif request.form.get('view') == 'LESS':
                 g.view = 'LESS'
-                query = get_sensor_data(key, 24)
-                ldata = []
-
-                if query:
-                    for count, element in enumerate(query, 1):
-                        if count %10 == 0:
-                            ldata.append(element)
-
-                    if query[-1].date != ldata[-1].date:
-                        ldata.append(query[-1]) # the last sensor data will be not lost
-                    query = ldata
+                query = get_query(key, 24, True)
 
             # button 2h
             elif request.form.get('time') == '2h':
                 g.time = '2h'
-                query = get_sensor_data(key, 2)
+                query = get_query(key, 2)
 
         # GET method
         elif request.method == 'GET':
-            g.view = 'ALL'
-            query = get_sensor_data(key, 24)
+            g.view = 'LESS'
+            query = get_query(key, 24, True)
 
-        for data in query:
-            date.append(data.date)
-            temp.append(data.temp)
-            humi.append(data.humi)
+        date = [data.date for data in query]
+        temp = [data.temp for data in query]
+        humi = [data.humi for data in query]
 
         # fill stats
         if temp and humi:
@@ -119,3 +108,33 @@ def get_last_sensor_data(key):
 # custom jinja filter
 def str_to_datetime(str):
     return dt.datetime.fromisoformat(str).strftime('%b. %d, %y - %H:%M:%S')
+
+
+def get_query(key, hours, less=False):
+    if less:
+        query = get_sensor_data(key, hours)
+        ldata = []
+
+        if query:
+            for count, element in enumerate(query, 1):
+                if count %10 == 0:
+                    ldata.append(element)
+
+            if query[-1].date != ldata[-1].date:
+                ldata.append(query[-1]) # the last sensor data will be not lost
+            query = ldata
+        return query
+    else:
+        return get_sensor_data(key, hours)
+
+
+def ping_sensor(key):
+    import subprocess
+    param = '-c' # if windows, use -n
+    # host = Device.select(Device.ip_addr).where(Device.key == key) ## TODO: database um device ip erweitern
+    command = ['ping', param, '1', '-w 1', '192.168.178.28']
+    #print(subprocess.call(command))
+    if subprocess.call(command, stdout=subprocess.DEVNULL) == 0:
+        return 'green' # True
+    else:
+        return 'red' # False

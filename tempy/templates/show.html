@@ -22,7 +22,9 @@
     </dl>
   </div>
   <div class="f7 gray">
+    <!-- <span class="f5 {{ ping(device.key) }}">&#9678;</span> -->
     {% if date %}{{ date[-1]|strdate }}{% endif %}
+</div>
   </div>
 </article>
 <div class="pv3">
@@ -86,8 +88,8 @@
 <div class="pa3 pa5-ns bb b--black-20">
   <h4 class="f6 fw6 ttu tracked">Amount of selected data</h4>
   <form method="post" action="/show/{{ device.key }}">
-    <input type="submit" value="ALL" name="view" {% if g.view == 'ALL' %} disabled {% endif %}/>
     <input type="submit" value="LESS" name="view" {% if g.view == 'LESS' %} disabled {% endif %}/>
+    <input type="submit" value="ALL" name="view" {% if g.view == 'ALL' %} disabled {% endif %}/>
     <input type="submit" value="2h" name="time" {% if g.time == '2h' %} disabled {% endif %}/>
   </form>
 </div>
