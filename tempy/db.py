@@ -17,6 +17,7 @@ class Device(BaseModel):
     info = pwe.CharField()
     environment = pwe.CharField()
     fuser = pwe.ForeignKeyField(User, backref='owner')
+    ip_addr = pwe.CharField()
 
 class SensorData(BaseModel):
     date = pwe.DateTimeField()

@@ -53,6 +53,13 @@ class TemPyRest(Resource):
             if 'date' not in req_data:
                 req_data['date'] = dt.datetime.now().isoformat()
 
+            # update ip_addr of requesting remote device
+            ip = (Device
+                    .update(ip_addr=request.remote_addr)
+                    .where(Device.key == key)
+                    .execute())
+                    
+            # insert sensor data
             sensor_data = SensorData(
                             temp=req_data['temp'],
                             humi=req_data['humi'],

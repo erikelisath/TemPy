@@ -3,6 +3,8 @@ from tempy.db import User, Device, SensorData
 import datetime as dt
 import statistics
 from time import process_time
+import subprocess
+
 
 def index():
     query = Device.select()
@@ -129,12 +131,12 @@ def get_query(key, hours, less=False):
 
 
 def ping_sensor(key):
-    import subprocess
     param = '-c' # if windows, use -n
-    # host = Device.select(Device.ip_addr).where(Device.key == key) ## TODO: database um device ip erweitern
-    command = ['ping', param, '1', '-w 1', '192.168.178.28']
-    #print(subprocess.call(command))
-    if subprocess.call(command, stdout=subprocess.DEVNULL) == 0:
-        return 'green' # True
-    else:
-        return 'red' # False
+    host = Device.select().where(Device.key == key).get()
+    
+    if host.ip_addr is not None:
+        command = ['ping', param, '1', '-w 1', host.ip_addr]
+        if subprocess.call(command, stdout=subprocess.DEVNULL) == 0:
+            return 'green' # online
+
+    return 'red' # offline
