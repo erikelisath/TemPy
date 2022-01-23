@@ -7,11 +7,15 @@ import subprocess
 
 
 def index():
+    return render_template('index.html')
+
+def start():
     query = Device.select()
-    return render_template('index.html', devices=query)
+    return render_template('start.html', devices=query)
 
 
 def show(key=None):
+    print('hello')
     # show only data when key exists
     if Device.get_or_none(Device.key == key):
         query = None
@@ -23,25 +27,25 @@ def show(key=None):
 
         # POST method
         if request.method == 'POST':
-            # button ALL
-            if request.form.get('view') == 'ALL':
-                g.view = 'ALL'
+            # button 'last 24h'
+            if request.form.get('name') == 'all':
+                g.name = 'all'
                 query = get_query(key, 24)
 
-            # button LESS
-            elif request.form.get('view') == 'LESS':
-                g.view = 'LESS'
+            # button 'last 24h (less)'
+            elif request.form.get('name') == 'less':
+                g.name = 'less'
                 query = get_query(key, 24, True)
 
-            # button 2h
-            elif request.form.get('time') == '2h':
-                g.time = '2h'
+            # button 'last 2h'
+            elif request.form.get('name') == 'time':
+                g.name = 'time'
                 query = get_query(key, 2)
 
         # GET method
         elif request.method == 'GET':
-            g.view = 'LESS'
-            query = get_query(key, 24, True)
+            g.name = 'time'
+            query = get_query(key, 2)
 
         date = [data.date for data in query]
         temp = [data.temp for data in query]
@@ -122,9 +126,11 @@ def get_query(key, hours, less=False):
                 if count %10 == 0:
                     ldata.append(element)
 
-            if query[-1].date != ldata[-1].date:
-                ldata.append(query[-1]) # the last sensor data will be not lost
-            query = ldata
+            if ldata:
+                if query[-1].date != ldata[-1].date:
+                    ldata.append(query[-1]) # the last sensor data will be not lost
+                query = ldata
+
         return query
     else:
         return get_sensor_data(key, hours)
@@ -133,7 +139,7 @@ def get_query(key, hours, less=False):
 def ping_sensor(key):
     param = '-c' # if windows, use -n
     host = Device.select().where(Device.key == key).get()
-    
+
     if host.ip_addr is not None:
         command = ['ping', param, '1', '-w 1', host.ip_addr]
         if subprocess.call(command, stdout=subprocess.DEVNULL) == 0:

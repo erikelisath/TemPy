@@ -20,11 +20,13 @@ def create_app(test_config=None):
 
     # add urls and resources
     app.add_url_rule('/', view_func=dash.index)
+    app.add_url_rule('/start', view_func=dash.start)
     app.add_url_rule('/show/<key>', view_func=dash.show, methods=['GET', 'POST'])
     app.add_url_rule('/raw/<key>', view_func=dash.raw)
     api.add_resource(rest.TemPyRest, '/<string:key>')
     app.jinja_env.filters['strdate'] = dash.str_to_datetime
     app.jinja_env.globals['ping'] = dash.ping_sensor
+    app.jinja_env.globals['last_sensor_data'] = dash.get_last_sensor_data
 
     # init database
     db.init(app)

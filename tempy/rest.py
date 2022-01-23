@@ -58,7 +58,7 @@ class TemPyRest(Resource):
                     .update(ip_addr=request.remote_addr)
                     .where(Device.key == key)
                     .execute())
-                    
+
             # insert sensor data
             sensor_data = SensorData(
                             temp=req_data['temp'],

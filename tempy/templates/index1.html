@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block pagetitle %}Welcome{% endblock %}
+{% block content %}
+<div class="pa3 bb b--black-20">
+  <h4 class="f6 fw6 ttu tracked">Available Sensor Datas</h4>
+  {% for device in devices %}
+  <a class="f6 link dim br2 ph3 pv2 mb2 dib white bg-dark-gray" href="/show/{{ device.key }}">{{ device.info }} ({{ device.key }})</a>
+  {% endfor %}
+</div>
+<div class="pa3 pa5-ns">
+  <h4 class="f6 fw6 ttu tracked">Database Informations</h4>
+  <dl class="f6 lh-title mv2">
+    <dt class="dib b">Raw Data:</dt>
+    <dd class="dib ml0 gray">23434</dd>
+  </dl>
+  <dl class="f6 lh-title mv2">
+    <dt class="dib b">Home:</dt>
+    <dd class="dib ml0 gray">Home Record</dd>
+  </dl>
+  <dl class="f6 lh-title mv2">
+    <dt class="dib b">Road:</dt>
+    <dd class="dib ml0 gray">Road Record</dd>
+  </dl>
+  <dl class="f6 lh-title mv2">
+    <dt class="dib b">Div:</dt>
+    <dd class="dib ml0 gray">Division Record</dd>
+  </dl>
+</div>
+
+
+<script>
+$(document).ready(function () {
+  console.log("test");
+  $("button").click(function(e) {
+    $.ajax({
+      // type:"GET",
+      url: '/show/kjl',
+      success: function(result) {
+                  // console.log(result);
+                  $(".content").html(result);
+      }
+    });
+  });
+});
+</script>
+<button>test</button>
+<div id="test-div">
+
+</div>
+{% endblock %}

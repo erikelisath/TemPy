@@ -1,0 +1,87 @@
+<!-- nav -->
+<nav class="ma3 pa3 br3 bg-yellow">
+  <a class="link dim black b f6 f5-ns dib mr3" href="/" title="Home">TemPyDash</a>
+</nav>
+<!-- cards -->
+<div class="cf">
+  {% for device in devices %}
+  <div class="ph3 pb3 fl w-50-ns w-100">
+    <h1 class="f4 bg-navy br3 br--top mv0 pv2 ph3"><a class="link dim white" id="{{ device.key }}" href="#">{{ device.info }} &map;</a></h1>
+    <div class="pa3 bg-near-white br3 br--bottom">
+      <div class="fl w-50 tl">
+        <dl class="db dib-l w-auto-l lh-title mr6-l">
+          <dd class="f6 fw4 ml0 gray ttu tracked">Temperature</dd>
+          <dd class="f2 f-subheadline-l fw6 ml0">{{ last_sensor_data(device.key).temp }}°C</dd>
+        </dl>
+      </div>
+      <div class="fl w-50 tr">
+        <dl class="db dib-l w-auto-l lh-title mr6-l">
+          <dd class="f6 fw4 ml0 gray ttu tracked">Humidity</dd>
+          <dd class="f2 f-subheadline-l fw6 ml0">{{ last_sensor_data(device.key).humi }}%</dd>
+        </dl>
+      </div>
+      <div class="f7 gray">
+        <span class="f5 {{ ping(device.key) }}">&#9678;</span>
+        {{ last_sensor_data(device.key).date }}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+  <!-- dummy card -->
+  <!-- <div class="ph3 pb3 fl w-50-ns w-100">
+    <h1 class="f4 bg-navy br3 br--top mv0 pv2 ph3"><a class="link dim white" id="" href="#">dummy &map;</a></h1>
+    <div class="pa3 bg-near-white br3 br--bottom">
+      <div class="fl w-50 tl">
+        <dl class="db dib-l w-auto-l lh-title mr6-l">
+          <dd class="f6 fw4 ml0 gray ttu tracked">Temperature</dd>
+          <dd class="f2 f-subheadline-l fw6 ml0">dfg°C</dd>
+        </dl>
+      </div>
+      <div class="fl w-50 tr">
+        <dl class="db dib-l w-auto-l lh-title mr6-l">
+          <dd class="f6 fw4 ml0 gray ttu tracked">Humidity</dd>
+          <dd class="f2 f-subheadline-l fw6 ml0">dfg%</dd>
+        </dl>
+      </div>
+      <div class="f7 gray">
+        <span class="f5 ">&#9678;</span>
+        dfg
+      </div>
+    </div>
+  </div> -->
+</div>
+<!-- least -->
+<div class="pa3 pa5-ns">
+  <h4 class="f6 fw6 ttu tracked">Database Informations</h4>
+  <dl class="f6 lh-title mv2">
+    <dt class="dib b">Raw Data:</dt>
+    <dd class="dib ml0 gray">23434</dd>
+  </dl>
+  <dl class="f6 lh-title mv2">
+    <dt class="dib b">Home:</dt>
+    <dd class="dib ml0 gray">Home Record</dd>
+  </dl>
+  <dl class="f6 lh-title mv2">
+    <dt class="dib b">Road:</dt>
+    <dd class="dib ml0 gray">Road Record</dd>
+  </dl>
+  <dl class="f6 lh-title mv2">
+    <dt class="dib b">Div:</dt>
+    <dd class="dib ml0 gray">Division Record</dd>
+  </dl>
+</div>
+<!-- script -->
+<script>
+$(document).ready(function () {
+  $("a").click(function(e) {
+    console.log($(this).attr("id"));
+    $.ajax({
+      type: "GET",
+      url: '/show/'+$(this).attr("id"),
+      success: function(result) {
+                  $("body").html(result);
+      }
+    });
+  });
+});
+</script>
