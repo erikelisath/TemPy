@@ -1,6 +1,6 @@
 <!-- nav -->
 <nav class="ma3 pa3 br3 bg-yellow">
-  <a class="link dim black b f6 f5-ns dib mr3" href="/" title="Home">&mapstoleft; back</a>
+  <a class="link dim black b f6 f5-ns dib mr3" id="nav" href="/" title="Home">&larr; back</a>
 </nav>
 <!-- card -->
 <div class="cf ma3">
@@ -20,7 +20,7 @@
     </div>
     <div class="f7 gray">
       <span class="f5 {{ ping(device.key) }}">&#9678;</span>
-      {{ last_sensor_data(device.key).date }}
+      {{ last_sensor_data(device.key).date|strdate }}
     </div>
   </div>
 </div>
@@ -32,26 +32,31 @@
   </div>
   <!-- buttons -->
   <div class="tc ph3 pt3">
-    <a class="f6 link br3 ph3 pv2 mb2 dib white bg-navy {% if g.name == 'time'%}o-30{% endif %}" id="{{ device.key }}" name="time" href="#">last 2h</a>
-    <a class="f6 link br3 ph3 pv2 mb2 dib white bg-navy {% if g.name == 'all'%}o-30{% endif %}" id="{{ device.key }}" name="all" href="#">last 24h</a>
-    <a class="f6 link br3 ph3 pv2 mb2 dib white bg-navy {% if g.name == 'less'%}o-30{% endif %}" id="{{ device.key }}" name="less" href="#">last 24h (less)</a>
+    <input type="hidden" id="device-key" value="{{ device.key }}"/>
+    <a class="f6 link br3 ph3 pv2 mb2 dib white bg-navy {% if g.name == 'time'%}o-30{% endif %}" id="time" name="time" href="#">last 2h</a>
+    <a class="f6 link br3 ph3 pv2 mb2 dib white bg-navy {% if g.name == 'all'%}o-30{% endif %}" id="all" name="all" href="#">last 24h</a>
+    <a class="f6 link br3 ph3 pv2 mb2 dib white bg-navy {% if g.name == 'less'%}o-30{% endif %}" id="less" name="less" href="#">last 24h (less)</a>
   </div>
 </div>
 <!-- script -->
 <script>
-$("a").click(function(e) {
-  $.ajax({
-    type: "POST",
-    url: "/show/"+$(this).attr("id"),
-    // contentType: "application/json",
-    data: {"name": $(this).attr("name")},
-    // dataType: "json",
-    success: function(result) {
-                $("body").html(result);
-    },
-    error: function(error) {
-                console.log(error);
-            }
+$(document).ready(function () {
+  $("a").click(function(e) {
+    if ($(this).attr("id") !== "nav") {
+      $.ajax({
+        type: "POST",
+        url: "/show/"+$("#device-key").attr("value"),
+        // contentType: "application/json",
+        data: {"name": $(this).attr("name")},
+        // dataType: "json",
+        success: function(result) {
+                    $("body").html(result);
+        },
+        error: function(error) {
+                    console.log(error);
+        }
+      });
+    }
   });
 });
 </script>

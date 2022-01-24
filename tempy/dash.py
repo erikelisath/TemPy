@@ -15,7 +15,6 @@ def start():
 
 
 def show(key=None):
-    print('hello')
     # show only data when key exists
     if Device.get_or_none(Device.key == key):
         query = None
